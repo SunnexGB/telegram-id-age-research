@@ -12,6 +12,20 @@ I followed public datasets back to their collectors, inspected Telegram's schema
 
 This repository contains the resulting estimator as [main.py](main.py) and the chronological account below. It does **not** recover an exact registration date from every Telegram ID. The numbers embedded in the script are a fitted research snapshot, including sources with imperfect provenance. They are useful for an approximate date, not proof of when someone opened an account.
 
+## Checking the sources and three new dates
+
+The three supplied registration anchors are training data for the common interpolation curve, not a separate lookup. Every numeric ID follows the same `regdate()` path and returns an estimate with a range. No runtime exception returns a contributor's date verbatim.
+
+The fit gives supplied registration anchors weight 10 and other rows weight 1. It removes four misleading source inputs, including authorization timestamps. The three training anchors are 8874594977 / 2026-06-17, 3941874 / 2013-12-31 and 5869015726 / 2023-01-21. Their provenance remains in anchors.json.
+
+The common curve predicts 2026-08-29, 2013-12-31 and 2023-01-21 respectively. All three supplied dates fall inside their model intervals (91-day half-width before clipping to today). These are training checks, not independent validation.
+
+Repeated held-out checks on the existing collection produced p50 42.58 days, p80 89.14 days and mean error 53.82 days across 223 distinct IDs (816 dependent repeated predictions). Compared with the original baseline, p80 improved slightly but p50 and mean error worsened. This does not establish a general accuracy improvement or a guaranteed interval. Full results are in validation.json.
+
+`regdate(id, registration_month="02.2016", not_after="2016-02-20")` can use a known registration month and an existence upper bound. A photo is not a registration date. Contradictions are flagged rather than silently accepted. In Hotaru, `ctx.tools.regdate(id)` and `r.regdate` remain offline; `await r.regdate_live()` attempts additional Telegram evidence.
+
+The additional public-source audit downloaded 46 pinned files and parsed 17 tables or sets of constants. No independently confirmed registration records were found. WizardLoop duplicates Jobians; lastochkin-group adds one unverified row, not imported into the model. Approximate estimator constants were not counted as new observations.
+
 ## Run the script
 
 You need Python 3. There are no packages to install and no network requests.
@@ -22,21 +36,14 @@ cd telegram-id-age-research
 python3 main.py 103151531 5000000000
 ```
 
-Output from the published snapshot:
+Current output (age_days changes with the UTC date):
 
 ```text
-103151531 2015-05-30 16:13:09 UTC +- 73 d  [ 2015-03-18 .. 2015-08-11 ]
-5000000000 2021-11-30 12:15:35 UTC +- 69 d  [ 2021-09-22 .. 2022-02-07 ]
+103151531 {'date': '2015-05-30', 'earliest': '2015-02-28', 'latest': '2015-08-29', 'error_days': 91, 'age_days': 4152, 'estimated': True, 'source': 'model', 'conflict': False, 'registration_month': '', 'not_after': ''}
+5000000000 {'date': '2021-11-30', 'earliest': '2021-08-31', 'latest': '2022-03-01', 'error_days': 91, 'age_days': 1776, 'estimated': True, 'source': 'model', 'conflict': False, 'registration_month': '', 'not_after': ''}
 ```
 
-The time of day is an interpolation result. It is not measured registration time. I have preserved the original script rather than quietly changing the artifact while writing its history. Read the date together with its interval.
-
-With no arguments the script reads one line from standard input. It accepts multiple numeric arguments, but does not resolve usernames. A leading `@` is stripped for historical reasons; `@username` still is not a numeric ID. Do not feed it channel IDs, Bot API negative chat IDs, or special service IDs and interpret the answer as an account birthday.
-
-The fitted ID range runs from about 218 thousand to 8.98 billion; the exact endpoints are in `A` in the script. Outside it, the script clamps to the nearest endpoint. That behavior produces a number rather than a useful extrapolation, so treat out-of-range inputs as unsupported. It does not check whether an ID exists. Even `0` passes the old numeric-input check; it is not a valid research sample.
-
-> [!WARNING]
-> The `+-` value comes from local held-out errors in a mixed dataset. It is not a guaranteed interval and not a calibrated probability for the account you entered. The true date can fall outside it.
+The range is empirical, not a guaranteed interval. Optional refinements: `python main.py 111040773 --month 02.2016 --not-after 2016-02-20`. Conflicting evidence is flagged, not silently accepted.
 
 <details>
 <summary>Read the investigation in order</summary>
@@ -324,6 +331,8 @@ TgDB's purchase gate was real in the recorded interaction. Its advertised covera
 I would not buy access on the strength of this investigation. Before recommending payment I would want sample results for independently known dates, a definition of each returned field, and a reason to expect those results to improve the offline estimator. I have none of those for the paid TgDB path.
 
 ## What is inside main.py
+
+This section records the original 55f968d snapshot. Its counts and mixed holdout scores are historical; the source-audit section above and validation.json describe the current release.
 
 The runtime is deliberately plain. It contains a date table, an uncertainty table, a binary-search interpolation function, and command-line output. The published file is the existing estimator renamed to `main.py`, without retraining or an unannounced algorithm change.
 
