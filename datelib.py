@@ -1,3 +1,10 @@
+# Based on telegram-id-age-research by sepiol026-wq
+# https://github.com/sepiol026-wq/telegram-id-age-research
+# Copyright (C) sepiol026-wq
+
+# Modified: adapted for heroku module, 2026-10-11
+# See https://www.gnu.org/licenses/agpl-3.0.html
+
 import datetime
 import math
 import time
