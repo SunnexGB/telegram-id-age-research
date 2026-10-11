@@ -384,3 +384,7 @@ Data and implementations examined:
 The examined APK has SHA-256 `2ce48d69be32a6374c0168b27a0f063612ce82be0c5f9ebb7a31c5952d12f883`. It is not redistributed here.
 
 This is a research snapshot, not an official Telegram service or an account-verification tool. It makes no claim to own the upstream datasets or client code cited above. There is no blanket relicensing of those sources in this repository.
+
+## License
+
+The original code and research text in this repository are licensed under [GNU AGPLv3](LICENSE) (`AGPL-3.0-only`). Referenced third-party datasets and client code retain their own licenses.
