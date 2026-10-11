@@ -41,6 +41,13 @@ Example output:
 
 The date and range are estimates, not an official registration record. The time of day is interpolated, not measured.
 
+With no arguments the script reads one line from standard input. It accepts multiple numeric arguments, but does not resolve usernames. A leading `@` is stripped for historical reasons; `@username` still is not a numeric ID. Do not feed it channel IDs, Bot API negative chat IDs, or special service IDs and interpret the answer as an account birthday.
+
+The fitted ID range runs from about 218 thousand to 8.98 billion; the exact endpoints are in `A` in the script. Outside it, the script clamps to the nearest endpoint. That behavior produces a number rather than a useful extrapolation, so treat out-of-range inputs as unsupported. It does not check whether an ID exists. Even `0` passes the old numeric-input check; it is not a valid research sample.
+
+> [!WARNING]
+> The `+-` value comes from local held-out errors in a mixed dataset. It is not a guaranteed interval and not a calibrated probability for the account you entered. The true date can fall outside it.
+
 <details>
 <summary>Read the investigation in order</summary>
 
